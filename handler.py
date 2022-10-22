@@ -2,14 +2,14 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-14 16:25:19
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-10-20 15:35:24
+LastEditTime: 2022-10-22 19:19:01
 FilePath: \QsPilUtils\handler.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 from pathlib import Path
 from PIL import Image, ImageFont, ImageDraw, ImageMath
 
-BASE_PATH:str = Path(__file__).absolute()
+BASE_PATH:str = Path(__file__).absolute().parents[0]
 
 
 def picture_paste_path(image_A_path: str, image_B_path: str, location: tuple = (0, 0), A_size: tuple = None, B_size: tuple = None) -> Image:
@@ -48,7 +48,7 @@ def picture_paste_img(img1: Image, img2: Image, location: tuple = (0, 0), A_size
 
 def write_sh(img: Image, text: str, fsize: int, dis: tuple = None, 
             color: str = "#000000", mode: str = "AlignLeft",
-            img_size: tuple = None, ttf_path: str = Path(BASE_PATH, r"\\ttf\\zh-cn.ttf")) -> Image:
+            img_size: tuple = None, ttf_path: str = str(Path(BASE_PATH)/r"ttf"/r"zh-cn.ttf")) -> Image:
     """
     说明: 在图片上写字
     img: 图片对象
