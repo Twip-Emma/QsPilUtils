@@ -2,15 +2,15 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-14 16:25:19
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-10-24 22:17:57
+LastEditTime: 2022-10-28 21:21:31
 FilePath: \QsPilUtils\handler.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 from pathlib import Path
-from Entity import FontEntity
+from Entity import FontEntity, BackgroundImage
 from PIL import Image, ImageFont, ImageDraw, ImageMath
 
-BASE_PATH:str = Path(__file__).absolute().parents[0]
+BASE_PATH: str = Path(__file__).absolute().parents[0]
 
 
 def picture_paste_path(image_A_path: str, image_B_path: str, location: tuple = (0, 0), A_size: tuple = None, B_size: tuple = None) -> Image:
@@ -47,8 +47,8 @@ def picture_paste_img(img1: Image, img2: Image, location: tuple = (0, 0), A_size
     return img2
 
 
-def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, mode: str = "AlignLeft",
-            img_size: tuple = None) -> Image:
+def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, mode: str = "C",
+             img_size: tuple = None) -> Image:
     """
     说明: 在图片上写字
     img: 图片对象
@@ -64,21 +64,57 @@ def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, 
     if img_size:
         img = img.resize(img_size)
 
-    if mode == "AlignLeft":
+    if mode == "L":
         if not dis:
             dis = (0, 0)
         font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
         draw = ImageDraw.Draw(img)
-        draw.text(xy = dis, text = text, fill=font_entity.color, font=font)
-    elif mode == "Center":
+        draw.text(xy=dis, text=text, fill=font_entity.color, font=font)
+    elif mode == "C":
         font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
         text_width = font.getsize(text=text)
         draw = ImageDraw.Draw(img)
         text_coordinate = None
         if not dis:
-            text_coordinate = int((img.width-text_width[0])/2), int((img.height-text_width[1])/2)
+            text_coordinate = int(
+                (img.width-text_width[0])/2), int((img.height-text_width[1])/2)
         else:
             text_coordinate = int((img.width-text_width[0])/2), dis[0]
-        draw.text(text_coordinate,text, fill=font_entity.color, font=font)
+        draw.text(text_coordinate, text, fill=font_entity.color, font=font)
+    else:
+        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
 
+    return img
+
+
+def write_longsh(font_entity: FontEntity, bg: BackgroundImage, text: str, mode: str = "C", dis: tuple = (0, 0)) -> Image:
+    font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
+
+    # 文字、图片预处理
+    text = text.strip().split("\n")
+    img = bg.getBg()
+    draw = ImageDraw.Draw(img)
+
+    # 写字
+    top_index = dis[0]
+    if mode == "C":
+        for text_item in text:
+            if text_item == "":
+                top_index += text_width[1]
+                continue
+            text_width = font.getsize(text=text_item)
+            text_coordinate = int((img.width-text_width[0])/2), top_index
+            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            top_index += text_width[1]
+    elif mode == "L":
+        for text_item in text:
+            if text_item == "":
+                top_index += text_width[1]
+                continue
+            text_width = font.getsize(text=text_item)
+            text_coordinate = dis[0], top_index
+            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            top_index += text_width[1]
+    else:
+        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
     return img
