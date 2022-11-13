@@ -2,7 +2,7 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-24 22:04:48
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-10-28 20:15:37
+LastEditTime: 2022-11-13 10:07:42
 FilePath: \QsPilUtils\Entity.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -24,6 +24,7 @@ class FontEntity:
             self.color = new_color
 
 
+# 纯色背景类
 class BackgroundImage:
     def __init__(self, width: int, height: int, color: str = "#ffffff") -> None:
         self.width = width
@@ -33,10 +34,17 @@ class BackgroundImage:
     def getBg(self):
         return Image.new(mode="RGBA", size=(self.width, self.height), color=self.color)
 
-    def changeBg(self, width: int = None, height: int = None, color: str = None) -> None:
+    def changeWidth(self, width: int = None):
         if not width:
             self.width = width
+        return self
+
+    def changeHeight(self, height: int = None):
         if not height:
             self.height = height
+        return self
+
+    def changeColor(self, color: int = None):
         if not color:
             self.color = color
+        return self

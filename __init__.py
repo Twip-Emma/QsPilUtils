@@ -2,7 +2,7 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-14 16:24:11
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-10-28 21:21:11
+LastEditTime: 2022-10-30 21:55:00
 FilePath: \QsPilUtils\__init__.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -52,5 +52,5 @@ long_txt = """
 
 bg = BackgroundImage(500, 500)
 ft = FontEntity(20)
-img = write_longsh(font_entity=ft, bg=bg, text=long_txt, mode="L", dis=(150,300))
+img = write_longsh(font_entity=ft, bg=bg, text=long_txt, mode="C", dis=(150,300))
 img.show()
