@@ -2,7 +2,7 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-14 16:24:11
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-10-30 21:55:00
+LastEditTime: 2022-12-08 23:17:16
 FilePath: \QsPilUtils\__init__.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -43,7 +43,7 @@ test2 = Image.open(Path(BASE_PATH)/"test_image"/"B.jpg")
 
 
 long_txt = """
-肯德基疯狂星\n期四V我50肯德基疯狂星期\n\n四V我50\n肯德基疯狂星期四V我5\n0肯德\n基疯狂星期四V我50肯\n\n\n德基疯狂
+FUCK YOU\n\nfuck you
 """
 
 
