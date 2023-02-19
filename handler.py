@@ -2,7 +2,7 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2022-10-14 16:25:19
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2022-11-15 23:24:26
+LastEditTime: 2022-12-09 19:23:14
 FilePath: \QsPilUtils\handler.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -53,10 +53,8 @@ def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, 
     说明: 在图片上写字
     img: 图片对象
     dis: AlignLeft模式中的上下左右边距, Center模式中为None则代表上下左右居中, 不为空则代表上边距
-    color: 颜色,十六进制
-    mode: 模式,可选模式有AlignLeft、Center
+    mode: 模式,可选模式有A(AlignLeft)、C(Center)
     img_size: 图片大小调整
-    ttf_path: ttf文件路径ttf_path,不指定则为默认字体
     """
     if not text:
         raise RuntimeError("Text cannot be empty")
@@ -88,6 +86,13 @@ def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, 
 
 
 def write_longsh(font_entity: FontEntity, bg: BackgroundImage, text: str, mode: str = "C", dis: tuple = (0, 0)) -> Image:
+    """
+    说明: 在图片上写字
+    bg: 图片对象
+    dis: AlignLeft模式中的上下左右边距, Center模式中为None则代表上下左右居中, 不为空则代表上边距
+    color: 颜色,十六进制
+    mode: 模式,可选模式有A(AlignLeft)、C(Center)
+    """
     font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
 
     # 文字、图片预处理
