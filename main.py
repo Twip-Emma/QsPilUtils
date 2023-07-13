@@ -16,5 +16,8 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 '''
 from payload import dao
 
-# 测试长文本转图片
-dao.text_to_image('Hello World\nPICSENCE\n\nFUCKfuck\nAmbivalent\nVision123', 20)
+# 测试长文本转图片（必输项：文本）
+dao.text_to_image('Hello World\nPICSENCE\n\nFUCKfuck\nAmbivalent\nVision123')
+
+# 测试长文本转图片（可选项：字号大小、左右上下的间距）
+dao.text_to_image('Hello World\nPICSENCE\n\nFUCKfuck\nAmbivalent\nVision123', 35, (20,50))
