@@ -1,15 +1,26 @@
+'''
+Author: 七画一只妖 1157529280@qq.com
+Date: 2023-04-21 11:07:37
+LastEditors: 七画一只妖 1157529280@qq.com
+LastEditTime: 2023-07-21 16:39:49
+FilePath: \QsPilUtils\payload\dao.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 from pathlib import Path
 BASE_PATH: str = Path(__file__).absolute().parents[0]
 import re
 
 from PIL import Image, ImageDraw, ImageFont
 
-def text_to_image(text: str, font_size: int = 20, spacing: tuple = (0, 0)):
+def text_to_image(text: str, font_size: int = 20, spacing: tuple = (0, 0), color: tuple = (0, 0, 0)):
     """
     文本转图像
     text:str 文本
     font_size:int = 20 字体大小
     spacing:tuple = (0,0) 上下左右间距
+    color:tuple = (0,0,0) 字体颜色
+    ====================
+    return:image图片对象、line_spacing行高
     """
     # 设置字体、字号、行高
     font_path = f'{BASE_PATH}\\ttf\\zh-cn.ttf'
@@ -28,89 +39,142 @@ def text_to_image(text: str, font_size: int = 20, spacing: tuple = (0, 0)):
     draw = ImageDraw.Draw(image)
     x, y = spacing[0], spacing[1]
     for line in lines:
-        draw.text((x, y), line, font=font, fill=(0, 0, 0))
+        draw.text((x, y), line, font = font, fill = color)
         y += line_spacing
 
     # 保存图片
-    image.save(f'{BASE_PATH}\\cache\\long_text.jpg')
+    return image, line_spacing
 
 
-# 内部函数-获取颜色文本
-def match_sentences_with_colors(input_string):
-    pattern = r"<(\w+)>(.*?)</\w+>"
-    matches = re.findall(pattern, input_string)
-    color_dict = {}
-    result = []
+class FontEntity:
+    def __init__(self, fsize: int = 12, color: str = "#000000", ttf_path: str = str(Path(BASE_PATH)/r"ttf"/r"zh-cn.ttf")) -> None:
+        self.fsize = fsize
+        self.color = color
+        self.ttf_path = ttf_path
 
-    for match in matches:
-        color = match[0]
-        sentence = match[1]
+    def setColor(self, new_color):
+        if new_color == None:
+            raise RuntimeError("new_color cannot be empty")
+        else:
+            self.color = new_color
+            return self
 
-        if color not in color_dict:
-            color_dict[color] = []
-        
-        color_dict[color].append(sentence)
+    def setSize(self, new_size):
+        if new_size == None:
+            raise RuntimeError("new_size cannot be empty")
+        else:
+            self.fsize = new_size
+            return self
 
-    for color, sentences in color_dict.items():
-        sentence_with_color = {color: ' '.join(sentences)}
-        result.append(sentence_with_color)
-
-    default_text = re.sub(pattern, lambda m: '' * len(m.group()), input_string)
-    default_sentence = {'default': default_text}
-    result.insert(0, default_sentence)
-
-    return result
+    def setTTF(self, new_ttf):
+        if new_ttf == None:
+            raise RuntimeError("new_ttf cannot be empty")
+        else:
+            self.ttf_path = str(new_ttf)
+            return self
 
 
-def generate_colored_text_image(input_text):
-    # 配置参数
-    font_size = 20  # 字体大小
-    padding = 10  # 图像边缘留白
-    tag_pattern = r"<(\w+)>(.*?)</\w+>"  # 标签匹配正则表达式
-    default_color = (0, 0, 0)  # 默认颜色为黑色
+def picture_paste_path(image_A_path: str, image_B_path: str, location: tuple = (0, 0), A_size: tuple = None, B_size: tuple = None) -> Image:
+    """
+    说明:使用图片路径进行粘贴,图片A在上,图片B在下\n
+    image_A_path、image_B_path:(必填参数)图片A和图片B的路径\n
+    location(可选参数):确定A相对于B的位置在哪\n
+    A_size、B_size(可选参数):调整A和B的图片大小
+    """
+    img1 = Image.open(image_A_path).convert('RGBA')
+    img2 = Image.open(image_B_path).convert('RGBA')
+    if A_size:
+        img1 = img1.resize(A_size)
+    if B_size:
+        img2 = img2.resize(B_size)
+    img2.paste(img1, location, img1)
+    return img2
 
-    # 处理标签和文本
-    matches = re.findall(tag_pattern, input_text)
-    parts = re.split(tag_pattern, input_text)
 
-    # 计算图像尺寸
-    image_width = max([len(part) for part in parts]) * (font_size // 2) + padding * 2
-    num_lines = input_text.count('\n') + 1
-    line_height = font_size + padding  # 行高
-    image_height = num_lines * line_height + padding * 2
+def picture_paste_img(img1: Image, img2: Image, location: tuple = (0, 0), A_size: tuple = None, B_size: tuple = None) -> Image:
+    """
+    说明:使用图片对象进行粘贴,图片A在上,图片B在下\n
+    image_A_path、image_B_path:(必填参数)图片A和图片B的路径\n
+    location(可选参数):确定A相对于B的位置在哪\n
+    A_size、B_size(可选参数):调整A和B的图片大小
+    """
+    img1 = img1.convert('RGBA')
+    img2 = img2.convert('RGBA')
+    if A_size:
+        img1 = img1.resize(A_size)
+    if B_size:
+        img2 = img2.resize(B_size)
+    img2.paste(img1, location, img1)
+    return img2
 
-    # 创建图像
-    image = Image.new('RGB', (image_width, image_height), (255, 255, 255))
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('arial.ttf', font_size)
 
-    # 渲染默认文本
-    y = padding
-    for part in parts:
-        lines = part.split('\n')
-        for line in lines:
-            draw.text((padding, y), line, font=font, fill=default_color)
-            y += line_height
+def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, mode: str = "C",
+             img_size: tuple = None) -> Image:
+    """
+    说明: 在图片上写字
+    img: 图片对象
+    dis: AlignLeft模式中的上下左右边距, Center模式中为None则代表上下左右居中, 不为空则代表上边距
+    color: 颜色,十六进制
+    mode: 模式,可选模式有AlignLeft、Center
+    img_size: 图片大小调整
+    ttf_path: ttf文件路径ttf_path,不指定则为默认字体
+    """
+    if not text:
+        raise RuntimeError("Text cannot be empty")
 
-    # 渲染标签文本
-    for match in matches:
-        tag = match[0]
-        text = match[1]
-        color = default_color
-        if tag == 'red':
-            color = (255, 0, 0)  # 红色
-        elif tag == 'green':
-            color = (0, 255, 0)  # 绿色
-        elif tag == 'blue':
-            color = (0, 0, 255)  # 蓝色
+    if img_size:
+        img = img.resize(img_size)
 
-        # 在图像上绘制标签文本
-        start_x = input_text.index(text)
-        start_y = input_text[:start_x].count('\n') * line_height + padding
-        end_x = start_x + len(text)
-        end_y = start_y + line_height
-        draw.rectangle((start_x, start_y, end_x, end_y), fill=color)
-        draw.text((start_x, start_y), text, font=font, fill=default_color)
-    
-    image.save(f'{BASE_PATH}\\cache\\long_text2.jpg')
-    return image
+    if mode == "L":
+        if not dis:
+            dis = (0, 0)
+        font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
+        draw = ImageDraw.Draw(img)
+        draw.text(xy=dis, text=text, fill=font_entity.color, font=font)
+    elif mode == "C":
+        font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
+        text_width = font.getsize(text=text)
+        draw = ImageDraw.Draw(img)
+        text_coordinate = None
+        if not dis:
+            text_coordinate = int(
+                (img.width-text_width[0])/2), int((img.height-text_width[1])/2)
+        else:
+            text_coordinate = int((img.width-text_width[0])/2), dis[0]
+        draw.text(text_coordinate, text, fill=font_entity.color, font=font)
+    else:
+        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
+
+    return img
+
+
+def write_longsh(font_entity: FontEntity, img:Image, text: str, mode: str = "C", dis: tuple = (0, 0)) -> Image:
+    font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
+
+    # 文字、图片预处理
+    text = text.strip().split("\n")
+    draw = ImageDraw.Draw(img)
+
+    # 写字
+    top_index = dis[0]
+    if mode == "C":
+        for text_item in text:
+            if text_item == "":
+                top_index += text_width[1]
+                continue
+            text_width = font.getsize(text=text_item)
+            text_coordinate = int((img.width-text_width[0])/2), top_index
+            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            top_index += text_width[1]
+    elif mode == "L":
+        for text_item in text:
+            if text_item == "":
+                top_index += text_width[1]
+                continue
+            text_width = font.getsize(text=text_item)
+            text_coordinate = dis[0], top_index
+            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            top_index += text_width[1]
+    else:
+        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
+    return img
