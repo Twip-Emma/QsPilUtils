@@ -2,15 +2,14 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2023-04-21 11:07:37
 LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2023-07-21 16:39:49
+LastEditTime: 2023-07-21 17:20:08
 FilePath: \QsPilUtils\payload\dao.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
+from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 BASE_PATH: str = Path(__file__).absolute().parents[0]
-import re
 
-from PIL import Image, ImageDraw, ImageFont
 
 def text_to_image(text: str, font_size: int = 20, spacing: tuple = (0, 0), color: tuple = (0, 0, 0)):
     """
@@ -39,11 +38,12 @@ def text_to_image(text: str, font_size: int = 20, spacing: tuple = (0, 0), color
     draw = ImageDraw.Draw(image)
     x, y = spacing[0], spacing[1]
     for line in lines:
-        draw.text((x, y), line, font = font, fill = color)
+        draw.text((x, y), line, font=font, fill=color)
         y += line_spacing
 
     # 保存图片
     return image, line_spacing
+
 
 
 class FontEntity:
@@ -52,21 +52,21 @@ class FontEntity:
         self.color = color
         self.ttf_path = ttf_path
 
-    def setColor(self, new_color):
+    def setColor(self, new_color) -> 'FontEntity':
         if new_color == None:
             raise RuntimeError("new_color cannot be empty")
         else:
             self.color = new_color
             return self
 
-    def setSize(self, new_size):
+    def setSize(self, new_size) -> 'FontEntity':
         if new_size == None:
             raise RuntimeError("new_size cannot be empty")
         else:
             self.fsize = new_size
             return self
 
-    def setTTF(self, new_ttf):
+    def setTTF(self, new_ttf) -> 'FontEntity':
         if new_ttf == None:
             raise RuntimeError("new_ttf cannot be empty")
         else:
@@ -143,12 +143,13 @@ def write_sh(font_entity: FontEntity, img: Image, text: str, dis: tuple = None, 
             text_coordinate = int((img.width-text_width[0])/2), dis[0]
         draw.text(text_coordinate, text, fill=font_entity.color, font=font)
     else:
-        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
+        raise RuntimeError(
+            "There is no such mode, please use \"C\" or \"L\" mode")
 
     return img
 
 
-def write_longsh(font_entity: FontEntity, img:Image, text: str, mode: str = "C", dis: tuple = (0, 0)) -> Image:
+def write_longsh(font_entity: FontEntity, img: Image, text: str, mode: str = "C", dis: tuple = (0, 0)) -> Image:
     font = ImageFont.truetype(font_entity.ttf_path, font_entity.fsize)
 
     # 文字、图片预处理
@@ -164,7 +165,8 @@ def write_longsh(font_entity: FontEntity, img:Image, text: str, mode: str = "C",
                 continue
             text_width = font.getsize(text=text_item)
             text_coordinate = int((img.width-text_width[0])/2), top_index
-            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            draw.text(text_coordinate, text_item,
+                      fill=font_entity.color, font=font)
             top_index += text_width[1]
     elif mode == "L":
         for text_item in text:
@@ -173,8 +175,10 @@ def write_longsh(font_entity: FontEntity, img:Image, text: str, mode: str = "C",
                 continue
             text_width = font.getsize(text=text_item)
             text_coordinate = dis[0], top_index
-            draw.text(text_coordinate, text_item, fill=font_entity.color, font=font)
+            draw.text(text_coordinate, text_item,
+                      fill=font_entity.color, font=font)
             top_index += text_width[1]
     else:
-        raise RuntimeError("There is no such mode, please use \"C\" or \"L\" mode")
+        raise RuntimeError(
+            "There is no such mode, please use \"C\" or \"L\" mode")
     return img
